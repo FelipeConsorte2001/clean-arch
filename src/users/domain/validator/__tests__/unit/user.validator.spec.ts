@@ -1,9 +1,9 @@
 import { UserProps } from '@/users/domain/entities/user.entity'
 import { UserDataBuilder } from '@/users/domain/testing/helpers/user-data-builder'
 import {
-    UserRules,
-    UserValidator,
-    UserValidatorFactory,
+  UserRules,
+  UserValidator,
+  UserValidatorFactory,
 } from '../../user.validator'
 
 let sut: UserValidator

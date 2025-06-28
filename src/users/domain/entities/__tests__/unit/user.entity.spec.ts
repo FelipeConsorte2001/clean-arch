@@ -5,10 +5,12 @@ describe('userEntity unit tests', () => {
   let props: UserProps
   let sut: UserEntity
   beforeEach(() => {
+    UserEntity.validate = jest.fn()
     props = UserDataBuilder({})
     sut = new UserEntity(props)
   })
   it('constructor method', () => {
+    expect(UserEntity.validate).toHaveBeenCalled()
     expect(sut.props.name).toEqual(props.name)
     expect(sut.props.password).toEqual(props.password)
     expect(sut.props.email).toEqual(props.email)
@@ -35,6 +37,7 @@ describe('userEntity unit tests', () => {
     expect(typeof sut.props.password).toEqual('string')
   })
   it('getter of email field', () => {
+    expect(UserEntity.validate).toHaveBeenCalled()
     expect(sut.props.email).toBeDefined()
     expect(sut.props.email).toEqual(props.email)
     expect(typeof sut.props.email).toEqual('string')
@@ -50,6 +53,7 @@ describe('userEntity unit tests', () => {
     expect(sut.props.name).toEqual('other name')
   })
   it('shoulder update the password user', () => {
+    expect(UserEntity.validate).toHaveBeenCalled()
     sut.updatePassord('other password')
     expect(sut.props.password).toEqual('other password')
   })
