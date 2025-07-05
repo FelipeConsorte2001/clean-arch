@@ -48,5 +48,27 @@ describe('UserEntinty intregarion tests', () => {
       }
       expect(() => new UserEntity(props)).toThrow(EntintyValidationError)
     })
+    it('Should throw an error when creating a user with invalid password', () => {
+      let props: UserProps = {
+        ...UserDataBuilder({}),
+        password: null,
+      }
+      expect(() => new UserEntity(props)).toThrow(EntintyValidationError)
+      props = {
+        ...UserDataBuilder({}),
+        password: '',
+      }
+      expect(() => new UserEntity(props)).toThrow(EntintyValidationError)
+      props = {
+        ...UserDataBuilder({}),
+        password: 'aa'.repeat(101),
+      }
+      expect(() => new UserEntity(props)).toThrow(EntintyValidationError)
+      props = {
+        ...UserDataBuilder({}),
+        password: 10 as any,
+      }
+      expect(() => new UserEntity(props)).toThrow(EntintyValidationError)
+    })
   })
 })
