@@ -4,7 +4,7 @@ import { UserEntity, UserProps } from '../../user.entity'
 
 describe('UserEntinty intregarion tests', () => {
   describe('Constructor method', () => {
-    it('Should throw an error when creating a user with invalid name', () => {
+    it('Should throw an error when creating a user with invalid email', () => {
       let props: UserProps = {
         ...UserDataBuilder({}),
         name: null,
@@ -18,6 +18,33 @@ describe('UserEntinty intregarion tests', () => {
       props = {
         ...UserDataBuilder({}),
         name: 'aa'.repeat(256),
+      }
+      expect(() => new UserEntity(props)).toThrow(EntintyValidationError)
+      props = {
+        ...UserDataBuilder({}),
+        name: 10 as any,
+      }
+      expect(() => new UserEntity(props)).toThrow(EntintyValidationError)
+    })
+    it('Should throw an error when creating a user with invalid email', () => {
+      let props: UserProps = {
+        ...UserDataBuilder({}),
+        email: null,
+      }
+      expect(() => new UserEntity(props)).toThrow(EntintyValidationError)
+      props = {
+        ...UserDataBuilder({}),
+        email: '',
+      }
+      expect(() => new UserEntity(props)).toThrow(EntintyValidationError)
+      props = {
+        ...UserDataBuilder({}),
+        email: 'aa'.repeat(256),
+      }
+      expect(() => new UserEntity(props)).toThrow(EntintyValidationError)
+      props = {
+        ...UserDataBuilder({}),
+        email: 10 as any,
       }
       expect(() => new UserEntity(props)).toThrow(EntintyValidationError)
     })
