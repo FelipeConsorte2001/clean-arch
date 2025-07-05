@@ -70,5 +70,18 @@ describe('UserEntinty intregarion tests', () => {
       }
       expect(() => new UserEntity(props)).toThrow(EntintyValidationError)
     })
+
+    it('Should throw an error when creating a user with invalid createdAt', () => {
+      let props = {
+        ...UserDataBuilder({}),
+        createdAt: '' as any,
+      }
+      expect(() => new UserEntity(props)).toThrow(EntintyValidationError)
+      props = {
+        ...UserDataBuilder({}),
+        createdAt: 10 as any,
+      }
+      expect(() => new UserEntity(props)).toThrow(EntintyValidationError)
+    })
   })
 })
