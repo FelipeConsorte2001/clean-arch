@@ -91,4 +91,25 @@ describe('UserEntinty intregarion tests', () => {
       new UserEntity(props)
     })
   })
+
+  describe('Update method', () => {
+    it('Should throw an error when updating a user with invalid name', () => {
+      const entinty = new UserEntity(UserDataBuilder({}))
+
+      expect(() => entinty.update(null)).toThrow(EntintyValidationError)
+      expect(() => entinty.update('')).toThrow(EntintyValidationError)
+      expect(() => entinty.update(10 as any)).toThrow(EntintyValidationError)
+      expect(() => entinty.update('aa'.repeat(256))).toThrow(
+        EntintyValidationError,
+      )
+    })
+    it('Should a valid user', () => {
+      expect.assertions(0)
+      const props: UserProps = {
+        ...UserDataBuilder({}),
+      }
+      const entinty = new UserEntity(props)
+      entinty.update('other name')
+    })
+  })
 })
