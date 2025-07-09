@@ -15,7 +15,7 @@ describe('InMemoryRepository unit tests', () => {
   beforeEach(() => {
     sut = new StubInMemoryRepository()
   })
-  it('Should inserts a new entity ', async () => {
+  it('Should inserts a new entity', async () => {
     const entity = new StubEntity({ name: 'name', price: 50 })
     await sut.insert(entity)
     expect(entity.toJSON()).toStrictEqual(sut.items[0].toJSON())
@@ -26,10 +26,34 @@ describe('InMemoryRepository unit tests', () => {
       new NotFoundError('Entity not found'),
     )
   })
-  it('Should find a entuty by id ', async () => {
+  it('Should find a entity by id', async () => {
     const entity = new StubEntity({ name: 'name', price: 50 })
     await sut.insert(entity)
     const result = await sut.findById(entity._id)
     expect(entity.toJSON()).toStrictEqual(result.toJSON())
+  })
+
+  it('Should all entity', async () => {
+    const entity = new StubEntity({ name: 'name', price: 50 })
+    await sut.insert(entity)
+    const result = await sut.findAll()
+    expect([entity]).toStrictEqual(result)
+  })
+
+  it('Should throw error when entity not found', async () => {
+    const entity = new StubEntity({ name: 'name', price: 50 })
+    await expect(sut.update(entity)).rejects.toThrow(
+      new NotFoundError('Entity not found'),
+    )
+  })
+  it('Should find a entity by id', async () => {
+    const entity = new StubEntity({ name: 'name', price: 50 })
+    await sut.insert(entity)
+    const entityUpdated = new StubEntity(
+      { name: 'updateName', price: 60 },
+      entity._id,
+    )
+    await sut.update(entityUpdated)
+    expect(entityUpdated.toJSON()).toStrictEqual(sut.items[0].toJSON())
   })
 })
