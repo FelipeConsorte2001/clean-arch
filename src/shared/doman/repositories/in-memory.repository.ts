@@ -1,4 +1,5 @@
 import { Entity } from '../entities/entity'
+import { NotFoundError } from '../erros/not-found-error'
 import { RepositoryInterface } from './repository-contracts'
 
 export abstract class InMemoryRepository<E extends Entity>
@@ -10,21 +11,29 @@ export abstract class InMemoryRepository<E extends Entity>
     this.items.push(entities)
   }
 
-  async findById(id: number): Promise<E> {
-    const entity = this.items.find(item => item.id === String(id))
-    if (!entity) throw new Error('Entity not found')
-    return entity
+  async findById(id: string): Promise<E> {
+    return await this._get(id)
   }
 
   async findAll(): Promise<E[]> {
     return this.items
   }
 
-  update(entities: E): Promise<void> {
-    throw new Error('Method not implemented.')
+  async update(entities: E): Promise<void> {
+    await this._get(entities.id)
+    const index = this.items.findIndex(item => item.id === entities.id)
+    this.items[index] = entities
   }
 
-  delete(id: string): Promise<void> {
-    throw new Error('Method not implemented.')
+  async delete(id: string): Promise<void> {
+    await this._get(id)
+    const index = this.items.findIndex(item => item.id === id)
+    this.items.slice(index, 1)
+  }
+
+  protected async _get(id: string): Promise<E> {
+    const entity = this.items.find(item => item.id === id)
+    if (!entity) throw new NotFoundError('Entity not found')
+    return entity
   }
 }
