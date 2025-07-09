@@ -112,4 +112,26 @@ describe('UserEntinty intregarion tests', () => {
       entinty.update('other name')
     })
   })
+  describe('UpdatePassoword method', () => {
+    it('Should a invalid user ussing password field', () => {
+      const entinty = new UserEntity(UserDataBuilder({}))
+
+      expect(() => entinty.updatePassord(null)).toThrow(EntintyValidationError)
+      expect(() => entinty.updatePassord('')).toThrow(EntintyValidationError)
+      expect(() => entinty.updatePassord(10 as any)).toThrow(
+        EntintyValidationError,
+      )
+      expect(() => entinty.updatePassord('aa'.repeat(101))).toThrow(
+        EntintyValidationError,
+      )
+    })
+    it('Should a valid user', () => {
+      expect.assertions(0)
+      const props: UserProps = {
+        ...UserDataBuilder({}),
+      }
+      const entinty = new UserEntity(props)
+      entinty.updatePassord('other password')
+    })
+  })
 })
