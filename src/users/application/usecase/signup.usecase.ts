@@ -1,9 +1,9 @@
 import { HashProvider } from '@/shared/application/providers/hash-provider'
-import { UseCase as DefaultUseCase } from '@/shared/application/providers/usecases/use-case'
+import { UseCase as DefaultUseCase } from '@/shared/application/usecases/use-case'
 import { UserEntity } from '@/users/domain/entities/user.entity'
 import { UserRepository } from '@/users/domain/repositories/user.repository'
+import { BadRequestError } from '../../../shared/application/erros/bad-request-error'
 import { UserOutput } from '../dtos/user-output'
-import { BadRequestError } from '../erros/bad-request-error'
 
 export type SignupUpInput = {
   name: string

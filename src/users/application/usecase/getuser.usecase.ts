@@ -1,4 +1,4 @@
-import { UseCase as DefaultUseCase } from '@/shared/application/providers/usecases/use-case'
+import { UseCase as DefaultUseCase } from '@/shared/application/usecases/use-case'
 import { UserRepository } from '@/users/domain/repositories/user.repository'
 import { UserOutput } from '../dtos/user-output'
 
