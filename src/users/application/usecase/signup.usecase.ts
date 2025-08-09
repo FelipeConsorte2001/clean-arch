@@ -1,4 +1,5 @@
 import { HashProvider } from '@/shared/application/providers/hash-provider'
+import { UseCase as DefaultUseCase } from '@/shared/application/providers/usecases/use-case'
 import { UserEntity } from '@/users/domain/entities/user.entity'
 import { UserRepository } from '@/users/domain/repositories/user.repository'
 import { UserOutput } from '../dtos/user-output'
@@ -11,7 +12,9 @@ export type SignupUpInput = {
 }
 export type Output = UserOutput
 
-export class SignupUseCase {
+export class SignupUseCase
+  implements DefaultUseCase<SignupUpInput, Promise<Output>>
+{
   constructor(
     private userRepository: UserRepository,
     private hashProviderProvider: HashProvider,
