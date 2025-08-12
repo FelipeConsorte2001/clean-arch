@@ -13,7 +13,7 @@ import { UserOutput, UserOutputMapper } from '../dtos/user-output'
 
 export type ListUsersInput = SearchInput
 export type Output = PaginationOutput<UserOutput>
-export class GetUserUseCase
+export class ListUserUseCase
   implements DefaultUseCase<ListUsersInput, Promise<Output>>
 {
   constructor(private userRepository: UserRepository) {}
