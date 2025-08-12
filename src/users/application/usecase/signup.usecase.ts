@@ -3,7 +3,7 @@ import { UseCase as DefaultUseCase } from '@/shared/application/usecases/use-cas
 import { UserEntity } from '@/users/domain/entities/user.entity'
 import { UserRepository } from '@/users/domain/repositories/user.repository'
 import { BadRequestError } from '../../../shared/application/erros/bad-request-error'
-import { UserOutput } from '../dtos/user-output'
+import { UserOutput, UserOutputMapper } from '../dtos/user-output'
 
 export type SignupUpInput = {
   name: string
@@ -33,6 +33,6 @@ export class SignupUseCase
     )
 
     await this.userRepository.insert(entity)
-    return entity.toJSON()
+    return UserOutputMapper.toOutput(entity)
   }
 }
