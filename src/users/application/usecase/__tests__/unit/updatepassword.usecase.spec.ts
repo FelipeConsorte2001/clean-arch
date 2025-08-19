@@ -5,7 +5,7 @@ import { UserEntity } from '@/users/domain/entities/user.entity'
 import { UserDataBuilder } from '@/users/domain/testing/helpers/user-data-builder'
 import { UserInMemoryRepository } from '@/users/infrastructure/database/in-memory/repositories/user-in-memory.repository'
 import { bcryptjsHashProvider } from '@/users/infrastructure/providers/hash-provider/bcryptjs-hash.provider'
-import { UpdatePasswordUseCase } from '../../updatepassword.usecase'
+import { UpdatePasswordUseCase } from '../../update-password.usecase'
 
 describe('UserPasswordcase unit tests', () => {
   let sut: UpdatePasswordUseCase

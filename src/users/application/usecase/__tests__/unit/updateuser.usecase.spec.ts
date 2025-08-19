@@ -3,7 +3,7 @@ import { NotFoundError } from '@/shared/doman/erros/not-found-error'
 import { UserEntity } from '@/users/domain/entities/user.entity'
 import { UserDataBuilder } from '@/users/domain/testing/helpers/user-data-builder'
 import { UserInMemoryRepository } from '@/users/infrastructure/database/in-memory/repositories/user-in-memory.repository'
-import { UpdateUserUseCase } from '../../updateuser.usecase'
+import { UpdateUserUseCase } from '../../update-user.usecase'
 
 describe('UserUsercase unit tests', () => {
   let sut: UpdateUserUseCase
