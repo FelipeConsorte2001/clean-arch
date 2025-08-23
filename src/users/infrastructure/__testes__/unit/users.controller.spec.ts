@@ -1,5 +1,6 @@
 import { UserOutput } from '@/users/application/dtos/user-output'
 import { Output as outputUser } from '@/users/application/usecase/get-user.usecase'
+import { Output as outputListUsers } from '@/users/application/usecase/list-users.usecase'
 import { Output as outputSignIn } from '@/users/application/usecase/sign-in.usecase'
 import { Output as outputSignUp } from '@/users/application/usecase/sign-up.usecase'
 import { Output as outputPassword } from '@/users/application/usecase/update-password.usecase'
@@ -112,5 +113,26 @@ describe('Users Controller unit tests', () => {
     const result = await sut.findOne(id)
     expect(output).toStrictEqual(result)
     expect(mockFindOneUserUseCase.execute).toHaveBeenCalledWith({ id })
+  })
+
+  it('Should list users', async () => {
+    const output: outputListUsers = {
+      items: [props],
+      currentPage: 1,
+      lastPage: 1,
+      perPage: 1,
+      total: 1,
+    }
+    const mockListUsersUseCase = {
+      execute: jest.fn().mockReturnValue(Promise.resolve(output)),
+    }
+    sut['listUsersUseCase'] = mockListUsersUseCase as any
+    const searchParams = {
+      page: 1,
+      perPage: 1,
+    }
+    const result = await sut.search(searchParams)
+    expect(output).toStrictEqual(result)
+    expect(mockListUsersUseCase.execute).toHaveBeenCalledWith(searchParams)
   })
 })
