@@ -5,20 +5,20 @@ import { UserRepository } from '@/users/domain/repositories/user.repository'
 import { BadRequestError } from '../../../shared/application/erros/bad-request-error'
 import { UserOutput, UserOutputMapper } from '../dtos/user-output'
 
-export type SignupUpInput = {
+export type SigninInput = {
   email: string
   password: string
 }
 export type Output = UserOutput
 
 export class SigninUseCase
-  implements DefaultUseCase<SignupUpInput, Promise<Output>>
+  implements DefaultUseCase<SigninInput, Promise<Output>>
 {
   constructor(
     private userRepository: UserRepository,
     private hashProviderProvider: HashProvider,
   ) {}
-  async execute(input: SignupUpInput): Promise<Output> {
+  async execute(input: SigninInput): Promise<Output> {
     const { email, password } = input
 
     if (!email || !password)
