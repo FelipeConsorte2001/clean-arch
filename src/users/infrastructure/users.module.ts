@@ -1,4 +1,5 @@
 import { HashProvider } from '@/shared/application/providers/hash-provider'
+import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.service'
 import { Module } from '@nestjs/common'
 import { DeleteUserUseCase } from '../application/usecase/delete-user.usecase'
 import { GetUserUseCase } from '../application/usecase/get-user.usecase'
@@ -8,7 +9,7 @@ import { SignupUseCase } from '../application/usecase/sign-up.usecase'
 import { UpdatePasswordUseCase } from '../application/usecase/update-password.usecase'
 import { UpdateUserUseCase } from '../application/usecase/update-user.usecase'
 import { UserRepository } from '../domain/repositories/user.repository'
-import { UserInMemoryRepository } from './database/in-memory/repositories/user-in-memory.repository'
+import { UserPrismaRepository } from './database/prisma/repositories/user-prisma.repository'
 import { bcryptjsHashProvider } from './providers/hash-provider/bcryptjs-hash.provider'
 import { UsersController } from './users.controller'
 
@@ -16,8 +17,15 @@ import { UsersController } from './users.controller'
   controllers: [UsersController],
   providers: [
     {
+      provide: 'PrismaService',
+      useClass: PrismaService,
+    },
+    {
       provide: 'UserRepository',
-      useClass: UserInMemoryRepository,
+      useFactory: (prismaService: PrismaService) => {
+        return new UserPrismaRepository(prismaService)
+      },
+      inject: ['PrismaService'],
     },
     {
       provide: 'HashProvider',
