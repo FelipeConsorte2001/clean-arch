@@ -4,6 +4,6 @@ export interface RepositoryInterface<E extends Entity> {
   insert(entities: E): Promise<void>
   findById(id: string): Promise<E>
   findAll(): Promise<E[]>
-  update(entities: E): Promise<void>
+  update(entity: E): Promise<void>
   delete(id: string): Promise<void>
 }
