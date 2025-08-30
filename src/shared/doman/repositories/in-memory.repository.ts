@@ -19,10 +19,10 @@ export abstract class InMemoryRepository<E extends Entity>
     return this.items
   }
 
-  async update(entities: E): Promise<void> {
-    await this._get(entities.id)
-    const index = this.items.findIndex(item => item.id === entities.id)
-    this.items[index] = entities
+  async update(entity: E): Promise<void> {
+    await this._get(entity.id)
+    const index = this.items.findIndex(item => item.id === entity.id)
+    this.items[index] = entity
   }
 
   async delete(id: string): Promise<void> {
