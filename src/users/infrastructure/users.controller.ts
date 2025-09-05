@@ -12,6 +12,7 @@ import {
   Query,
 } from '@nestjs/common'
 
+import { UserOutput } from '../application/dtos/user-output'
 import { DeleteUserUseCase } from '../application/usecase/delete-user.usecase'
 import { GetUserUseCase } from '../application/usecase/get-user.usecase'
 import { ListUserUseCase } from '../application/usecase/list-users.usecase'
@@ -24,6 +25,7 @@ import { SinginDto } from './dtos/signin.dto'
 import { SingupDto } from './dtos/signup.dto'
 import { UpdatePasswordDto } from './dtos/update-password.dto'
 import { UpdateUserDto } from './dtos/update-user.dto'
+import { UserPresenter } from './presenters/user.presenter'
 
 @Controller('users')
 export class UsersController {
@@ -48,15 +50,21 @@ export class UsersController {
   @Inject(ListUserUseCase)
   private listUsersUseCase: ListUserUseCase
 
+  static userToResponse(output: UserOutput) {
+    return new UserPresenter(output)
+  }
+
   @Post()
   async create(@Body() singupDto: SingupDto) {
-    return this.singupUseCase.execute(singupDto)
+    const output = await this.singupUseCase.execute(singupDto)
+    return UsersController.userToResponse(output)
   }
 
   @HttpCode(200)
   @Post('login')
   async login(@Body() singinDto: SinginDto) {
-    return this.singinUseCase.execute(singinDto)
+    const output = await this.singinUseCase.execute(singinDto)
+    return UsersController.userToResponse(output)
   }
 
   @Get()
@@ -66,12 +74,17 @@ export class UsersController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.getUserUseCase.execute({ id })
+    const output = await this.getUserUseCase.execute({ id })
+    return UsersController.userToResponse(output)
   }
 
   @Put(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.updateUserUseCase.execute({ id, ...updateUserDto })
+    const output = await this.updateUserUseCase.execute({
+      id,
+      ...updateUserDto,
+    })
+    return UsersController.userToResponse(output)
   }
 
   @Patch(':id')
@@ -79,7 +92,11 @@ export class UsersController {
     @Param('id') id: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
-    return this.updatePasswordUseCase.execute({ id, ...updatePasswordDto })
+    const output = await this.updatePasswordUseCase.execute({
+      id,
+      ...updatePasswordDto,
+    })
+    return UsersController.userToResponse(output)
   }
 
   @HttpCode(204)
