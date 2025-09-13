@@ -15,7 +15,10 @@ import {
 import { UserOutput } from '../application/dtos/user-output'
 import { DeleteUserUseCase } from '../application/usecase/delete-user.usecase'
 import { GetUserUseCase } from '../application/usecase/get-user.usecase'
-import { ListUserUseCase } from '../application/usecase/list-users.usecase'
+import {
+  ListUserUseCase,
+  Output,
+} from '../application/usecase/list-users.usecase'
 import { SigninUseCase } from '../application/usecase/sign-in.usecase'
 import { SignupUseCase } from '../application/usecase/sign-up.usecase'
 import { UpdatePasswordUseCase } from '../application/usecase/update-password.usecase'
@@ -25,7 +28,10 @@ import { SinginDto } from './dtos/signin.dto'
 import { SingupDto } from './dtos/signup.dto'
 import { UpdatePasswordDto } from './dtos/update-password.dto'
 import { UpdateUserDto } from './dtos/update-user.dto'
-import { UserPresenter } from './presenters/user.presenter'
+import {
+  UserCollectionPresenter,
+  UserPresenter,
+} from './presenters/user.presenter'
 
 @Controller('users')
 export class UsersController {
@@ -54,6 +60,10 @@ export class UsersController {
     return new UserPresenter(output)
   }
 
+  static listUsersToResponse(output: Output) {
+    return new UserCollectionPresenter(output)
+  }
+
   @Post()
   async create(@Body() singupDto: SingupDto) {
     const output = await this.singupUseCase.execute(singupDto)
@@ -69,7 +79,8 @@ export class UsersController {
 
   @Get()
   async search(@Query() searchParams: ListUsersDto) {
-    return this.listUsersUseCase.execute(searchParams)
+    const output = await this.listUsersUseCase.execute(searchParams)
+    return UsersController.listUsersToResponse(output)
   }
 
   @Get(':id')
