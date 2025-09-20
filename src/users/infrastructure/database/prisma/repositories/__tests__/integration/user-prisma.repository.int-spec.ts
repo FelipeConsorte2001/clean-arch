@@ -8,18 +8,17 @@ import {
   SearchResults,
 } from '@/users/domain/repositories/user.repository'
 import { UserDataBuilder } from '@/users/domain/testing/helpers/user-data-builder'
-import { Test, TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing'
 import { PrismaClient } from '@prisma/client'
 import { UserPrismaRepository } from '../../user-prisma.repository'
 
 describe('UserPrismaRepository integration tests', () => {
   const prismaService = new PrismaClient()
   let sut: UserPrismaRepository
-  let module: TestingModule
 
   beforeAll(async () => {
     setupPrismaTests()
-    module = await Test.createTestingModule({
+    await Test.createTestingModule({
       imports: [DatabaseModule.forTests(prismaService)],
     }).compile()
   })
