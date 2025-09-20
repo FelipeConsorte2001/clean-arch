@@ -89,7 +89,6 @@ describe('Users Controller unit tests', () => {
     }
     sut['updatePasswordUseCase'] = mockUpdatePasswordUseCase as any
     const input: UpdatePasswordDto = {
-      name: 'some name',
       password: '654321 new',
       oldPassword: '1234',
     }
