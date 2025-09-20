@@ -21,6 +21,13 @@ describe('EnvConfigService unit', () => {
   it('should return the variable PORT', () => {
     expect(sut.getAppPort()).toBe(3000)
   })
+  it('should return the variable JWT_EXPIRES_IN', () => {
+    expect(sut.getJwtExpiresInSeconds()).toBe(86400)
+  })
+
+  it('should return the variable JWT_SECRET', () => {
+    expect(sut.getJwtSecret()).toBe('fake_secret')
+  })
 
   it('should return the variable NODE_ENV', () => {
     expect(sut.getNodeEnv()).toBe('test')
