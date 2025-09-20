@@ -4,7 +4,7 @@ import { EnvConfig } from './env-config.interface'
 
 @Injectable()
 export class EnvConfigService implements EnvConfig {
-  constructor(private configService: ConfigService) { }
+  constructor(private configService: ConfigService) {}
 
   getAppPort(): number {
     return Number(this.configService.get<number>('PORT'))
