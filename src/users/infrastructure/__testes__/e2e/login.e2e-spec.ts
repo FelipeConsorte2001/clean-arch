@@ -118,18 +118,24 @@ describe('UsersController e2e tests', () => {
       )
     })
 
-    // it('should return a error with 409 code when the email is duplicated', async () => {
-    //   const entity = new UserEntity(UserDataBuilder({ ...signupDto }))
-    //   await repository.insert(entity)
-    //   await request(app.getHttpServer())
-    //     .post('/users')
-    //     .send(signupDto)
-    //     .expect(409)
-    //     .expect({
-    //       statusCode: 409,
-    //       error: 'Conflict',
-    //       message: 'Email address already used',
-    //     })
-    // })
+    it('should return a error with 400 code when email not found', async () => {
+      const passwordHash = await hashProvider.generateHash(signinDto.password)
+      const entity = new UserEntity({
+        ...UserDataBuilder({}),
+        email: signinDto.email,
+        password: passwordHash,
+      })
+      await repository.insert(entity)
+
+      await request(app.getHttpServer())
+        .post('/users/login')
+        .send({ email: signinDto.email, password: 'fake' })
+        .expect(400)
+        .expect({
+          statusCode: 400,
+          error: 'Bad Request',
+          message: 'Invalid data not provided',
+        })
+    })
   })
 })
