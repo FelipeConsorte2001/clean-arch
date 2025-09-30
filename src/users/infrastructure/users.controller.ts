@@ -12,6 +12,7 @@ import {
   Query,
 } from '@nestjs/common'
 
+import { AuthService } from '@/auth/infrastructure/auth.service'
 import { UserOutput } from '../application/dtos/user-output'
 import { DeleteUserUseCase } from '../application/usecase/delete-user.usecase'
 import { GetUserUseCase } from '../application/usecase/get-user.usecase'
@@ -56,6 +57,9 @@ export class UsersController {
   @Inject(ListUserUseCase)
   private listUsersUseCase: ListUserUseCase
 
+  @Inject(AuthService)
+  private authService: AuthService
+
   static userToResponse(output: UserOutput) {
     return new UserPresenter(output)
   }
@@ -74,7 +78,7 @@ export class UsersController {
   @Post('login')
   async login(@Body() singinDto: SinginDto) {
     const output = await this.singinUseCase.execute(singinDto)
-    return UsersController.userToResponse(output)
+    return this.authService.generateJwt(output.id)
   }
 
   @Get()

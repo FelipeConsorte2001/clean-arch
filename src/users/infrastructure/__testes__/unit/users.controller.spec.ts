@@ -1,7 +1,6 @@
 import { UserOutput } from '@/users/application/dtos/user-output'
 import { Output as outputUser } from '@/users/application/usecase/get-user.usecase'
 import { Output as outputListUsers } from '@/users/application/usecase/list-users.usecase'
-import { Output as outputSignIn } from '@/users/application/usecase/sign-in.usecase'
 import { Output as outputSignUp } from '@/users/application/usecase/sign-up.usecase'
 import { Output as outputPassword } from '@/users/application/usecase/update-password.usecase'
 import { Output as outputUpdate } from '@/users/application/usecase/update-user.usecase'
@@ -52,18 +51,21 @@ describe('Users Controller unit tests', () => {
     expect(mockSignupUseCase.execute).toHaveBeenCalledWith(input)
   })
   it('Should authenticate a user', async () => {
-    const output: outputSignIn = props
+    const output = 'fake_token'
     const mockSigninUseCase = {
       execute: jest.fn().mockReturnValue(Promise.resolve(output)),
     }
+    const mockAuthService = {
+      generateJwt: jest.fn().mockReturnValue(Promise.resolve(output)),
+    }
     sut['singinUseCase'] = mockSigninUseCase as any
+    sut['authService'] = mockAuthService as any
     const input: SinginDto = {
       email: 'a@a.com',
       password: '1234',
     }
-    const presenter = await sut.login(input)
-    expect(presenter).toBeInstanceOf(UserPresenter)
-    expect(presenter).toStrictEqual(new UserPresenter(output))
+    const result = await sut.login(input)
+    expect(result).toEqual(output)
     expect(mockSigninUseCase.execute).toHaveBeenCalledWith(input)
   })
 
