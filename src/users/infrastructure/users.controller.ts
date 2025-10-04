@@ -10,8 +10,10 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common'
 
+import { AuthGuard } from '@/auth/infrastructure/auth.guard'
 import { AuthService } from '@/auth/infrastructure/auth.service'
 import { UserOutput } from '../application/dtos/user-output'
 import { DeleteUserUseCase } from '../application/usecase/delete-user.usecase'
@@ -80,19 +82,21 @@ export class UsersController {
     const output = await this.singinUseCase.execute(singinDto)
     return this.authService.generateJwt(output.id)
   }
-
+  @UseGuards(AuthGuard)
   @Get()
   async search(@Query() searchParams: ListUsersDto) {
     const output = await this.listUsersUseCase.execute(searchParams)
     return UsersController.listUsersToResponse(output)
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const output = await this.getUserUseCase.execute({ id })
     return UsersController.userToResponse(output)
   }
 
+  @UseGuards(AuthGuard)
   @Put(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const output = await this.updateUserUseCase.execute({
@@ -102,6 +106,7 @@ export class UsersController {
     return UsersController.userToResponse(output)
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':id')
   async updatePassword(
     @Param('id') id: string,
@@ -114,6 +119,7 @@ export class UsersController {
     return UsersController.userToResponse(output)
   }
 
+  @UseGuards(AuthGuard)
   @HttpCode(204)
   @Delete(':id')
   async remove(@Param('id') id: string) {
