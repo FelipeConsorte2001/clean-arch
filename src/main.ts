@@ -18,7 +18,7 @@ async function bootstrap() {
     )
     .setVersion('1.0.0')
     .addBearerAuth({
-      description: 'Informar o JWT para autorizar o acesso ',
+      description: 'Infomate JWT token to get acess',
       name: 'Authorization',
       scheme: 'Bearer',
       type: 'http',
