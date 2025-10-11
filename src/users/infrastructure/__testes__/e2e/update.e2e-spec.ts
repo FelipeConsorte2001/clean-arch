@@ -1,4 +1,5 @@
 import { applyGlobalConfig } from '@/global-config'
+import { HashProvider } from '@/shared/application/providers/hash-provider'
 import { DatabaseModule } from '@/shared/infrastructure/database/database.module'
 import { setupPrismaTests } from '@/shared/infrastructure/database/prisma/testing/setup-prisma/setup-prisma-tests'
 import { EnvConfigModule } from '@/shared/infrastructure/env-config/env-config.module'
@@ -12,6 +13,7 @@ import { PrismaClient } from '@prisma/client'
 import { instanceToPlain } from 'class-transformer'
 import request from 'supertest'
 import { UpdateUserDto } from '../../dtos/update-user.dto'
+import { bcryptjsHashProvider } from '../../providers/hash-provider/bcryptjs-hash.provider'
 import { UsersController } from '../../users.controller'
 import { UsersModule } from '../../users.module'
 
@@ -22,6 +24,9 @@ describe('UsersController e2e tests', () => {
   let updateUserDto: UpdateUserDto
   const prismaService = new PrismaClient()
   let entity: UserEntity
+  let hashProvider: HashProvider
+  let hashPassword: string
+  let accessToken: string
 
   beforeAll(async () => {
     setupPrismaTests()
@@ -36,6 +41,8 @@ describe('UsersController e2e tests', () => {
     applyGlobalConfig(app)
     await app.init()
     repository = module.get<UserRepository>('UserRepository')
+    hashProvider = new bcryptjsHashProvider()
+    hashPassword = await hashProvider.generateHash('1234')
   })
 
   beforeEach(async () => {
@@ -43,8 +50,15 @@ describe('UsersController e2e tests', () => {
       name: 'test name',
     }
     await prismaService.user.deleteMany()
-    entity = new UserEntity(UserDataBuilder({}))
+    entity = new UserEntity(
+      UserDataBuilder({ email: 'a@a.com', password: hashPassword }),
+    )
     await repository.insert(entity)
+    const loginResponse = await request(app.getHttpServer())
+      .post('/users/login')
+      .send({ email: 'a@a.com', password: '1234' })
+      .expect(200)
+    accessToken = loginResponse.body.accessToken
   })
 
   describe('PUT /users/:id', () => {
@@ -53,6 +67,7 @@ describe('UsersController e2e tests', () => {
       updateUserDto.name = newName
       const res = await request(app.getHttpServer())
         .put(`/users/${entity._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
         .send(updateUserDto)
         .expect(200)
       const user = await repository.findById(entity._id)
@@ -64,6 +79,7 @@ describe('UsersController e2e tests', () => {
     it('should return a error with 422 code when the request body is invalid', async () => {
       const res = await request(app.getHttpServer())
         .put(`/users/${entity._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({})
         .expect(422)
       expect(res.body.error).toBe('Unprocessable Entity')
@@ -77,6 +93,7 @@ describe('UsersController e2e tests', () => {
   it('should return a error with 404 code when throw notFoundError with invalid id', async () => {
     await request(app.getHttpServer())
       .put(`/users/fake`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send(updateUserDto)
       .expect(404)
       .expect({
@@ -84,5 +101,11 @@ describe('UsersController e2e tests', () => {
         error: 'Not Found',
         message: 'UserModel not found using ID fake',
       })
+  })
+  it('should return a error with 401 code when user is unauthorized', async () => {
+    await request(app.getHttpServer()).put(`/users/fake`).expect(401).expect({
+      statusCode: 401,
+      message: 'Unauthorized',
+    })
   })
 })
