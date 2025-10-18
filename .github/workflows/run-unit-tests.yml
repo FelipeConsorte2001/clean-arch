@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # config necessary test to run app
-    spets:
+    steps:
       - uses: actions/checkout@v3 # download code from app to ubuntu
 
       - uses: actions/setup-node@v3 # config node
