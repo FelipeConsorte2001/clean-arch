@@ -1,7 +1,7 @@
 name: CI - Unit Tests
 
 on:
-  pull_request:
+  push:
     branches: [ main ]
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
           node-version: 18
           cache: 'npm'
         
-      - run: npm ci # intall dependeces without interaction
+      - run: npm ci # install dependeces without interaction
 
       - run: npm run test:unit
         env:
