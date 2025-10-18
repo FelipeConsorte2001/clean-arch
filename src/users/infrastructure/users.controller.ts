@@ -15,6 +15,12 @@ import {
 
 import { AuthGuard } from '@/auth/infrastructure/auth.guard'
 import { AuthService } from '@/auth/infrastructure/auth.service'
+import {
+  ApiBearerAuth,
+  ApiResponse,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger'
 import { UserOutput } from '../application/dtos/user-output'
 import { DeleteUserUseCase } from '../application/usecase/delete-user.usecase'
 import { GetUserUseCase } from '../application/usecase/get-user.usecase'
@@ -36,6 +42,7 @@ import {
   UserPresenter,
 } from './presenters/user.presenter'
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   @Inject(SignupUseCase)
@@ -70,18 +77,88 @@ export class UsersController {
     return new UserCollectionPresenter(output)
   }
 
+  @ApiResponse({
+    status: 422,
+    description: 'body has invalid data',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'email conflict',
+  })
   @Post()
   async create(@Body() singupDto: SingupDto) {
     const output = await this.singupUseCase.execute(singupDto)
     return UsersController.userToResponse(output)
   }
 
+  @ApiResponse({
+    status: 200,
+    schema: {
+      type: 'object',
+      properties: {
+        accessToken: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 422,
+    description: 'body has invalid data',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'email did not find',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'invalid credentials',
+  })
   @HttpCode(200)
   @Post('login')
   async login(@Body() singinDto: SinginDto) {
     const output = await this.singinUseCase.execute(singinDto)
     return this.authService.generateJwt(output.id)
   }
+
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    schema: {
+      type: 'object',
+      properties: {
+        meta: {
+          type: 'object',
+          properties: {
+            total: {
+              type: 'number',
+            },
+            currentPage: {
+              type: 'number',
+            },
+            lastPage: {
+              type: 'number',
+            },
+            perPage: {
+              type: 'number',
+            },
+          },
+        },
+        data: {
+          type: 'array',
+          items: { $ref: getSchemaPath(UserPresenter) },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 422,
+    description: 'consult params invalid',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'access unathorizathe',
+  })
   @UseGuards(AuthGuard)
   @Get()
   async search(@Query() searchParams: ListUsersDto) {
@@ -89,14 +166,35 @@ export class UsersController {
     return UsersController.listUsersToResponse(output)
   }
 
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 404,
+    description: 'id did not find',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'access unathorizathe',
+  })
   @UseGuards(AuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const output = await this.getUserUseCase.execute({ id })
     return UsersController.userToResponse(output)
   }
-
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
+  @ApiResponse({
+    status: 422,
+    description: 'body has invalid data',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'id did not find',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'access unathorizathe',
+  })
   @Put(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const output = await this.updateUserUseCase.execute({
@@ -106,7 +204,20 @@ export class UsersController {
     return UsersController.userToResponse(output)
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
+  @ApiResponse({
+    status: 422,
+    description: 'body has invalid data',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'id did not find',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'access unathorizathe',
+  })
   @Patch(':id')
   async updatePassword(
     @Param('id') id: string,
@@ -118,7 +229,19 @@ export class UsersController {
     })
     return UsersController.userToResponse(output)
   }
-
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 204,
+    description: 'exclusion confirmation response',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'id did not find',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'access unathorizathe',
+  })
   @UseGuards(AuthGuard)
   @HttpCode(204)
   @Delete(':id')
