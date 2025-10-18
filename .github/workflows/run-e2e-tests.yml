@@ -1,8 +1,8 @@
 name: CI - integration and E2E Tests
 
 on:
-  push:
-    # branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   run-int-e2e-tests:
