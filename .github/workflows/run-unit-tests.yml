@@ -1,0 +1,27 @@
+name: CI - Unit Tests
+
+on: [push]
+
+jobs:
+  run-unit-tests:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+
+    # config necessary test to run app
+    spets:
+      - uses: actions/checkout@v3 # download code from app to ubuntu
+
+      - uses: actions/setup-node@v3 # config node
+        with:
+          node-version: 18
+          cache: 'npm'
+        
+      - run: npm ci # intall dependeces without interaction
+
+      - run: npm run test:unit
+        env:
+          PORT: 3000
+          NODE_ENV: test
+          JWT_SECRET: fake_secret
+          JWT_EXPIRES_IN: 86400
+          DATABASE_URL: fake_url
